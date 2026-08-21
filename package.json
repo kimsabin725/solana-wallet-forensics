@@ -1,0 +1,18 @@
+{
+  "name": "solana-wallet-forensics",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Reconstruct a Solana wallet's full economic position from raw chain data",
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@jup-ag/lend-read": "0.0.13",
+    "@kamino-finance/farms-sdk": "^4.0.0",
+    "@kamino-finance/klend-sdk": "^10.1.0",
+    "@orca-so/whirlpools-sdk": "latest",
+    "@solana/spl-stake-pool": "1.1.8",
+    "@solana/web3.js": "latest",
+    "decimal.js": "^10.6.0"
+  }
+}

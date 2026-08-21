@@ -1,0 +1,8 @@
+node_modules/
+.npmrc
+
+# 산출물 JSON은 포지션 규모를 담고 있어 커밋하지 않는다
+scripts/*.json
+!scripts/package.json
+tmp/
+*.log
