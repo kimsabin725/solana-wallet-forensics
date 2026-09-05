@@ -1,5 +1,31 @@
 # solana-wallet-forensics
 
+## 이게 뭔가요 (비개발자용) · What this is (non-technical)
+
+**KR** — 저는 본업으로 펀드 손익을 관리합니다. 기초잔고 + 유입 − 유출 + 운용손익 = 현재잔고가 맞아떨어질 때까지 숫자를 보고하지 않는 일입니다.
+같은 기준으로 제 솔라나 지갑(7개 프로토콜, 동시 포지션 12개)을 감사해 봤더니, 공식 도구가 세 군데서 틀린 숫자를 주고 있었습니다.
+
+1. **지갑 주소로 거래를 조회하면 입금이 빠집니다.** 솔라나는 토큰이 지갑이 아니라 별도 토큰 계정에 들어가서, 기존 계정으로 들어온 입금 3건이 기본 조회에서 사라져 있었습니다. 투입 자본이 과소계상돼 수익률 분모가 틀렸습니다.
+2. **스테이킹 잔고가 지갑 기록에 없습니다.** 보상이 지갑을 거치지 않고 락업 금고로 바로 들어가서, 금고 쪽 입금 이력으로 거꾸로 재구성해야 했습니다. 이전 분석의 단위 환산 오류 2건과 누락 1건이 여기서 드러났습니다.
+3. **어떤 값은 아무 API도 알려주지 않습니다.** 폐기된 프로그램에 남은 대출의 누적 이자가 그랬습니다. 계정 원시 데이터를 직접 읽어 구조를 역추적하고, 같은 금고의 다른 포지션과 대조해 값을 확정했습니다.
+
+이 저장소는 그 감사를 위해 만든 수집·검증·해석 스크립트입니다. **금액과 지갑 주소는 들어 있지 않습니다.** 손익 계산 계층은 포지션 규모가 드러나서 비공개입니다.
+결론은 도구가 아니라 원칙입니다: 온체인으로 증명되지 않는 숫자는 주장하지 않는다.
+
+**EN** — My day job is fund P&L: you do not report a number until opening + inflows − outflows + operating result = closing.
+I audited my own Solana wallet (7 protocols, 12 concurrent positions) to that standard, and the official tooling was wrong in three places.
+
+1. **Querying by wallet address misses deposits.** On Solana tokens live in separate token accounts, so three inbound transfers into existing accounts were invisible to the standard lookup. Capital in was understated and the return denominator was wrong.
+2. **Staked balances leave no trail in the wallet.** Rewards go straight into a locked escrow without touching the wallet, so the balance had to be rebuilt from the vault's deposit history. That surfaced two unit-conversion errors and one omitted claim in an earlier analysis.
+3. **Some values are exposed by no API at all.** Accrued interest on a loan in a deprecated program was one. I read the raw account bytes, reverse-engineered the layout, and pinned the value by cross-checking sibling positions on the same custody.
+
+This repository is the collection, audit and decoding layer built for that audit. **No amounts and no wallet address are included**; the P&L layer stays private because it embeds position sizes.
+The takeaway is a rule, not a tool: do not claim a number the chain cannot prove.
+
+---
+
+## Technical overview
+
 Scripts for reconstructing a Solana wallet's complete economic position from raw chain data —
 including the parts that RPC convenience methods and protocol APIs do not report.
 
