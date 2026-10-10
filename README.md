@@ -102,6 +102,7 @@ Run in order; each stage writes JSON that later stages read.
 | | `26` | CLMM position token amounts and accrued fees |
 | | `27`–`29` | legacy borrow position, custody scan, interest-index back-solve |
 | Snapshot | `30_revalue_snapshot.mjs` | single-slot balances + prices for valuation |
+| Ledger | `31_double_entry_ledger.mjs` | transaction-level double-entry ledger: acquisition basis and realised gain per disposal |
 | Probes | `90`–`95` | exploratory one-offs kept for reference |
 
 ```bash
@@ -148,8 +149,11 @@ a dedicated endpoint before running the collection stage over a busy wallet.
 The P&L, attribution, benchmark and scenario layer. Those scripts embed position sizes and cost bases, so
 they are excluded. Their methodology is described above and in the audit report; only the arithmetic is missing.
 
-No transaction-level double-entry ledger was built, so realised and unrealised P&L cannot be separated by
-date. This does not affect balance-sheet totals, which are verified by the identity check above.
+The output of the transaction-level double-entry ledger (`31_double_entry_ledger.mjs`) is also excluded,
+for the same reason. The script itself is published: it covers all 418 events (415 from the owner history
+plus 3 recovered by the token-account audit), excludes 23 failed transactions, and produces 159 ledger entries.
+Cost basis is taken only from the wallet's own USDC-legged trades; legs that never touch a priced leg are
+reported separately rather than estimated.
 
 ## License
 
